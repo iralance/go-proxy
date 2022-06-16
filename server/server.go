@@ -36,7 +36,7 @@ func (c *client) Read(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-			buf := make([]byte, 1040)
+			buf := make([]byte, 10240)
 			n, err := c.conn.Read(buf)
 			if err != nil && err != io.EOF {
 				if strings.Contains(err.Error(), "timeout") {
@@ -48,6 +48,10 @@ func (c *client) Read(ctx context.Context) {
 				c.exit <- err
 				return
 			}
+			if n == 0 {
+				continue
+			}
+
 			buf = buf[:n]
 			if len(buf) == 4 && string(buf) == "ping" {
 				fmt.Println("server收到心跳包")
@@ -99,6 +103,9 @@ func (u *user) Read(ctx context.Context) {
 				fmt.Println("读取出现错误...")
 				u.exit <- err
 				return
+			}
+			if n == 0 {
+				continue
 			}
 			buf = buf[:n]
 			if len(buf) == 4 && string(buf) == "ping" {
