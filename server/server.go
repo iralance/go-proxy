@@ -69,7 +69,7 @@ func (c *client) Write(ctx context.Context) {
 			return
 		case buf := <-c.write:
 			_, err := c.conn.Write(buf)
-			if err != nil && err != io.EOF {
+			if err != nil {
 				c.exit <- err
 				return
 			}
@@ -124,7 +124,7 @@ func (u *user) Write(ctx context.Context) {
 			return
 		case buf := <-u.write:
 			_, err := u.conn.Write(buf)
-			if err != nil && err != io.EOF {
+			if err != nil {
 				u.exit <- err
 				return
 			}
